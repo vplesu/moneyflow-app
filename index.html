@@ -594,11 +594,12 @@
             background: rgba(0,0,0,0.6);
             backdrop-filter: blur(10px);
             z-index: 1000;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             animation: fadeIn 0.3s ease-out;
             padding: 20px;
             overflow-y: auto;
+            padding-top: 5vh;
         }
         
         .modal-content {
@@ -717,22 +718,41 @@
             box-shadow: 0 6px 20px rgba(229, 62, 62, 0.6);
         }
         
+        .edit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-left: 8px;
+            margin-right: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .edit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 12px rgba(102, 126, 234, 0.5);
+        }
+        
         .delete-btn {
             background: linear-gradient(135deg, #e53e3e, #ff6b6b);
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 11px;
             cursor: pointer;
-            margin-left: 15px;
+            margin-left: 8px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(229, 62, 62, 0.3);
+            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
         }
         
         .delete-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.5);
+            transform: scale(1.05);
+            box-shadow: 0 3px 12px rgba(229, 62, 62, 0.5);
         }
         
         .sections-container {
@@ -850,6 +870,33 @@
                 margin: 3px 5px;
             }
             
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .summary-compact {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .summary-compact h3 {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .summary-box {
+                padding: 12px 8px;
+            }
+            
+            .summary-label {
+                font-size: 10px;
+            }
+            
+            .summary-amount {
+                font-size: 14px;
+            }
+            
             .date-alerts {
                 top: 70px;
                 right: 10px;
@@ -907,19 +954,19 @@
     <div class="container">
         <!-- Riepilogo Generale compatto in alto -->
         <div class="summary-compact">
-            <h3><i class="fas fa-chart-pie"></i> Riepilogo</h3>
+            <h3><i class="fas fa-chart-pie"></i> Riepilogo Fisso</h3>
             <div class="summary-grid">
                 <div class="summary-box income">
-                    <div class="summary-label">Entrate Totali</div>
-                    <div class="summary-amount" id="total-income">€0</div>
+                    <div class="summary-label">Entrate Fisse</div>
+                    <div class="summary-amount" id="total-fixed-income">€0</div>
                 </div>
                 <div class="summary-box expense">
-                    <div class="summary-label">Spese Totali</div>
-                    <div class="summary-amount" id="total-expenses">€0</div>
+                    <div class="summary-label">Spese Fisse</div>
+                    <div class="summary-amount" id="total-fixed-expenses">€0</div>
                 </div>
                 <div class="summary-box balance">
-                    <div class="summary-label">Bilancio Finale</div>
-                    <div class="summary-amount" id="final-balance-compact">€0</div>
+                    <div class="summary-label">Rimanenze Fisse</div>
+                    <div class="summary-amount" id="final-fixed-balance">€0</div>
                 </div>
             </div>
         </div>
@@ -982,6 +1029,11 @@
         <i class="fas fa-copy"></i>
     </button>
     
+    <!-- Pulsante backup (nascosto, attivabile con doppio tap sulla scritta MoneyFlow) -->
+    <button id="backup-btn" onclick="exportData()" style="display:none;" title="Esporta backup dati">
+        <i class="fas fa-download"></i>
+    </button>
+    
     <!-- Modal per aggiungere/modificare elementi -->
     <div class="modal" id="modal">
         <div class="modal-content">
@@ -1028,24 +1080,7 @@
         let dismissedAlerts = new Set(); // Per tracciare gli alert chiusi
         
         // Dati iniziali con date
-        let data = {
-            fixedExpenses: [
-                {name: "mutuo casa", amount: 480, date: "2025-08-15"},
-                {name: "assicurazione auto", amount: 80, date: "2025-08-19"},
-                {name: "cucina", amount: 170, date: "2025-08-15"},
-                {name: "spesa cibo", amount: 600, date: "2025-08-23"},
-                {name: "carta credito american express", amount: 60, date: "2025-08-19"},
-                {name: "cessione del quinto", amount: 135, date: "2025-08-01"},
-                {name: "internet", amount: 26, date: "2025-08-26"},
-                {name: "bollette", amount: 150, date: "2025-08-20"},
-                {name: "scuola belle e liam", amount: 200, date: "2025-08-30"}
-            ],
-            fixedIncome: [
-                {name: "stipendio vlad", amount: 2335, date: "2025-08-02"},
-                {name: "assegno unico", amount: 470, date: "2025-08-20"}
-            ],
-            monthlyData: {}
-        };
+        let data = {}; // Inizializzato vuoto, verrà caricato da loadFromStorage()
         
         const monthNames = [
             "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
@@ -1450,6 +1485,7 @@
                     <div class="item-main">
                         <span class="item-name"><i class="fas fa-home"></i> ${item.name}</span>
                         <span class="item-amount">€${item.amount.toFixed(2)}</span>
+                        <button class="edit-btn" onclick="editFixedExpense(${index})"><i class="fas fa-edit"></i></button>
                         <button class="delete-btn" onclick="deleteFixedExpense(${index})"><i class="fas fa-trash"></i></button>
                     </div>
                     <div class="item-details">
@@ -1473,6 +1509,7 @@
                     <div class="item-main">
                         <span class="item-name"><i class="fas fa-money-bill-wave"></i> ${item.name}</span>
                         <span class="item-amount">€${item.amount.toFixed(2)}</span>
+                        <button class="edit-btn" onclick="editFixedIncome(${index})"><i class="fas fa-edit"></i></button>
                         <button class="delete-btn" onclick="deleteFixedIncome(${index})"><i class="fas fa-trash"></i></button>
                     </div>
                     <div class="item-details">
@@ -1498,6 +1535,7 @@
                         <div class="item-main">
                             <span class="item-name"><i class="fas fa-shopping-bag"></i> ${item.name}</span>
                             <span class="item-amount">€${item.amount.toFixed(2)}</span>
+                            <button class="edit-btn" onclick="editVariableExpense(${index})"><i class="fas fa-edit"></i></button>
                             <button class="delete-btn" onclick="deleteVariableExpense(${index})"><i class="fas fa-trash"></i></button>
                         </div>
                         <div class="item-details">
@@ -1524,6 +1562,7 @@
                         <div class="item-main">
                             <span class="item-name"><i class="fas fa-piggy-bank"></i> ${item.name}</span>
                             <span class="item-amount">€${item.amount.toFixed(2)}</span>
+                            <button class="edit-btn" onclick="editVariableIncome(${index})"><i class="fas fa-edit"></i></button>
                             <button class="delete-btn" onclick="deleteVariableIncome(${index})"><i class="fas fa-trash"></i></button>
                         </div>
                         <div class="item-details">
@@ -1558,24 +1597,22 @@
             document.getElementById('fixed-total').textContent = `€${(fixedIncomeTotal - fixedExpensesTotal).toFixed(2)}`;
             document.getElementById('variable-total').textContent = `€${(variableIncomeTotal - variableExpensesTotal).toFixed(2)}`;
             
-            // Aggiorna il riepilogo compatto in alto
-            const totalIncome = fixedIncomeTotal + variableIncomeTotal;
-            const totalExpenses = fixedExpensesTotal + variableExpensesTotal;
-            const finalBalance = totalIncome - totalExpenses;
+            // Aggiorna il riepilogo compatto - SOLO FISSO
+            const fixedBalance = fixedIncomeTotal - fixedExpensesTotal;
             
-            document.getElementById('total-income').textContent = `€${totalIncome.toFixed(2)}`;
-            document.getElementById('total-expenses').textContent = `€${totalExpenses.toFixed(2)}`;
+            document.getElementById('total-fixed-income').textContent = `€${fixedIncomeTotal.toFixed(2)}`;
+            document.getElementById('total-fixed-expenses').textContent = `€${fixedExpensesTotal.toFixed(2)}`;
             
-            const finalBalanceElement = document.getElementById('final-balance-compact');
-            finalBalanceElement.textContent = `€${finalBalance.toFixed(2)}`;
+            const finalFixedBalanceElement = document.getElementById('final-fixed-balance');
+            finalFixedBalanceElement.textContent = `€${fixedBalance.toFixed(2)}`;
             
-            // Colora il bilancio finale
-            if (finalBalance >= 0) {
-                finalBalanceElement.style.color = '#68d391';
-                finalBalanceElement.parentElement.style.borderLeftColor = '#68d391';
+            // Colora il bilancio fisso
+            if (fixedBalance >= 0) {
+                finalFixedBalanceElement.style.color = '#68d391';
+                finalFixedBalanceElement.parentElement.style.borderLeftColor = '#68d391';
             } else {
-                finalBalanceElement.style.color = '#ff6b6b';
-                finalBalanceElement.parentElement.style.borderLeftColor = '#ff6b6b';
+                finalFixedBalanceElement.style.color = '#ff6b6b';
+                finalFixedBalanceElement.parentElement.style.borderLeftColor = '#ff6b6b';
             }
         }
         
@@ -1600,10 +1637,53 @@
             document.getElementById('item-name').focus();
             editingIndex = -1;
             editingType = '';
+            
+            // Previeni il scroll del body
+            document.body.style.overflow = 'hidden';
         }
         
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
+            // Ripristina il scroll del body
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Funzioni di modifica
+        function editFixedExpense(index) {
+            const item = data.fixedExpenses[index];
+            openEditModal(item, 'fixed-expense', index);
+        }
+        
+        function editFixedIncome(index) {
+            const item = data.fixedIncome[index];
+            openEditModal(item, 'fixed-income', index);
+        }
+        
+        function editVariableExpense(index) {
+            const key = getCurrentMonthKey();
+            const item = data.monthlyData[key].variableExpenses[index];
+            openEditModal(item, 'variable-expense', index);
+        }
+        
+        function editVariableIncome(index) {
+            const key = getCurrentMonthKey();
+            const item = data.monthlyData[key].variableIncome[index];
+            openEditModal(item, 'variable-income', index);
+        }
+        
+        function openEditModal(item, type, index) {
+            document.getElementById('modal').style.display = 'flex';
+            document.getElementById('modal-title').textContent = 'Modifica Elemento';
+            document.getElementById('item-name').value = item.name;
+            document.getElementById('item-amount').value = item.amount;
+            document.getElementById('item-date').value = item.date || '';
+            document.getElementById('item-type').value = type;
+            document.getElementById('item-name').focus();
+            editingIndex = index;
+            editingType = type;
+            
+            // Previeni il scroll del body
+            document.body.style.overflow = 'hidden';
         }
         
         function saveItem() {
@@ -1619,27 +1699,49 @@
             
             const item = {name, amount, date: date || null};
             
-            switch(type) {
-                case 'fixed-expense':
-                    data.fixedExpenses.push(item);
-                    break;
-                case 'fixed-income':
-                    data.fixedIncome.push(item);
-                    break;
-                case 'variable-expense':
-                    initMonthlyData();
-                    data.monthlyData[getCurrentMonthKey()].variableExpenses.push(item);
-                    break;
-                case 'variable-income':
-                    initMonthlyData();
-                    data.monthlyData[getCurrentMonthKey()].variableIncome.push(item);
-                    break;
+            // Se stiamo modificando un elemento esistente
+            if (editingIndex !== -1 && editingType) {
+                switch(editingType) {
+                    case 'fixed-expense':
+                        data.fixedExpenses[editingIndex] = item;
+                        break;
+                    case 'fixed-income':
+                        data.fixedIncome[editingIndex] = item;
+                        break;
+                    case 'variable-expense':
+                        initMonthlyData();
+                        data.monthlyData[getCurrentMonthKey()].variableExpenses[editingIndex] = item;
+                        break;
+                    case 'variable-income':
+                        initMonthlyData();
+                        data.monthlyData[getCurrentMonthKey()].variableIncome[editingIndex] = item;
+                        break;
+                }
+                showAlert('✅ Elemento modificato con successo!', 'info');
+            } else {
+                // Altrimenti aggiungiamo un nuovo elemento
+                switch(type) {
+                    case 'fixed-expense':
+                        data.fixedExpenses.push(item);
+                        break;
+                    case 'fixed-income':
+                        data.fixedIncome.push(item);
+                        break;
+                    case 'variable-expense':
+                        initMonthlyData();
+                        data.monthlyData[getCurrentMonthKey()].variableExpenses.push(item);
+                        break;
+                    case 'variable-income':
+                        initMonthlyData();
+                        data.monthlyData[getCurrentMonthKey()].variableIncome.push(item);
+                        break;
+                }
+                showAlert('✅ Elemento aggiunto con successo!', 'info');
             }
             
             saveToStorage();
             updateDisplay();
             closeModal();
-            showAlert('✅ Elemento aggiunto con successo!', 'info');
         }
         
         function deleteFixedExpense(index) {
@@ -1732,19 +1834,118 @@
         
         function saveToStorage() {
             try {
-                console.log('💾 Salvataggio dati:', data);
+                // Salva nel localStorage del browser/webview
+                const dataToSave = {
+                    ...data,
+                    lastUpdated: new Date().toISOString(),
+                    version: '1.0'
+                };
+                localStorage.setItem('moneyflow_data', JSON.stringify(dataToSave));
+                console.log('💾 Dati salvati con successo:', dataToSave);
             } catch (e) {
                 console.log('❌ Errore salvataggio:', e);
+                // Fallback: prova sessionStorage
+                try {
+                    sessionStorage.setItem('moneyflow_data', JSON.stringify(data));
+                    console.log('💾 Fallback sessionStorage usato');
+                } catch (e2) {
+                    console.log('❌ Anche sessionStorage fallito:', e2);
+                    showAlert('⚠️ Errore salvataggio dati', 'warning');
+                }
             }
         }
         
         function loadFromStorage() {
             try {
-                console.log('📂 Caricamento dati...');
+                // Prova localStorage prima
+                let savedData = localStorage.getItem('moneyflow_data');
+                
+                // Se non c'è localStorage, prova sessionStorage  
+                if (!savedData) {
+                    savedData = sessionStorage.getItem('moneyflow_data');
+                }
+                
+                if (savedData) {
+                    const parsedData = JSON.parse(savedData);
+                    
+                    // Verifica che i dati abbiano la struttura corretta
+                    if (parsedData.fixedExpenses && parsedData.fixedIncome) {
+                        data = {
+                            fixedExpenses: parsedData.fixedExpenses || [],
+                            fixedIncome: parsedData.fixedIncome || [],
+                            monthlyData: parsedData.monthlyData || {}
+                        };
+                        console.log('📂 Dati caricati con successo:', data);
+                        showAlert('📂 Dati caricati dal backup locale', 'info');
+                    } else {
+                        console.log('⚠️ Dati corrotti, uso dati di default');
+                        initializeDefaultData();
+                    }
+                } else {
+                    console.log('💭 Nessun dato salvato, uso dati di default');
+                    initializeDefaultData();
+                }
             } catch (e) {
                 console.log('❌ Errore caricamento:', e);
+                initializeDefaultData();
+                showAlert('⚠️ Errore caricamento, dati ripristinati', 'warning');
             }
         }
+        
+        function initializeDefaultData() {
+            // Reset ai dati iniziali se non ci sono dati salvati o sono corrotti
+            data = {
+                fixedExpenses: [
+                    {name: "mutuo casa", amount: 480, date: "2025-08-15"},
+                    {name: "assicurazione auto", amount: 80, date: "2025-08-19"},
+                    {name: "cucina", amount: 170, date: "2025-08-15"},
+                    {name: "spesa cibo", amount: 600, date: "2025-08-23"},
+                    {name: "carta credito american express", amount: 60, date: "2025-08-19"},
+                    {name: "cessione del quinto", amount: 135, date: "2025-08-01"},
+                    {name: "internet", amount: 26, date: "2025-08-26"},
+                    {name: "bollette", amount: 150, date: "2025-08-20"},
+                    {name: "scuola belle e liam", amount: 200, date: "2025-08-30"}
+                ],
+                fixedIncome: [
+                    {name: "stipendio vlad", amount: 2335, date: "2025-08-02"},
+                    {name: "assegno unico", amount: 470, date: "2025-08-20"}
+                ],
+                monthlyData: {}
+            };
+        }
+        
+        // Funzione per esportare dati come backup
+        function exportData() {
+            try {
+                const dataToExport = {
+                    ...data,
+                    exportDate: new Date().toISOString(),
+                    appVersion: '1.0'
+                };
+                
+                const dataStr = JSON.stringify(dataToExport, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `moneyflow_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showAlert('💾 Backup scaricato con successo!', 'info');
+            } catch (e) {
+                console.log('❌ Errore export:', e);
+                showAlert('❌ Errore durante l\'export', 'warning');
+            }
+        }
+        
+        // Auto-save ogni 30 secondi
+        setInterval(() => {
+            saveToStorage();
+        }, 30000);
         
         // Inizializzazione
         document.addEventListener('DOMContentLoaded', function() {
