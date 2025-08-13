@@ -1,0 +1,28 @@
+{
+  "name": "MoneyFlow - Gestione Soldi",
+  "short_name": "MoneyFlow",
+  "description": "App personale per la gestione delle spese e entrate",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iIzY2N2VlYSIgZD0iTTI3MiAxMjBjLTkuNjAwIDAtMTcuNTAwIDcuMjAwLTExMS43MDAgMTctMTExLjcwMCByLTIuMzAwIDAtNC40MDAgMi4yMDAtNDQuMzAwIDkuMDAwIDAtMTguNTAwIDkuNjAwLTI3LjNwMDAgMjcuMzAwLTkuMDAwIDE4LjUwMC05LjYwMCIvPjwvc3ZnPg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iIzY2N2VlYSIgZD0iTTEyOC02NEMwIDY0LTY0IDEyOCAwIDEyOCA2NCAxOTIgMTI4IDEyOCAxOTIgNjQgMTI4LTY0Ii8+PC9zdmc+",
+      "sizes": "256x256",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iIzY2N2VlYSIgZD0iTTY0IDQ1Yy0xIEwtNSA0QmMtLjggNi40Ni00LjkgNS0tNC44IDdOQTItMTAuMyA2ZDUgNS4xXzFzIDA1IDdnMjRzLTEuMzAgMi4xMHAxXlRVMi0uNDMybDJnF4K0RGZJA9Ii8+PC9zdmc+",
+      "sizes": "128x128",
+      "type": "image/svg+xml"
+    }
+  ]
+}
