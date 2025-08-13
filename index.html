@@ -945,47 +945,199 @@
         }
         
         function installApp() {
+            // Prova prima l'installazione PWA automatica
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((result) => {
                     if (result.outcome === 'accepted') {
                         console.log('✅ PWA installata con successo!');
                         showAlert('🎉 App installata con successo!', 'info');
+                        dismissInstall();
                     } else {
-                        console.log('❌ Installazione rifiutata');
+                        showDetailedInstructions();
                     }
                     deferredPrompt = null;
                 });
-                dismissInstall();
             } else {
-                showInstructions();
+                // Se PWA non disponibile, mostra istruzioni dettagliate
+                showDetailedInstructions();
             }
         }
         
         function showInstructions() {
+            showDetailedInstructions();
+        }
+        
+        function showDetailedInstructions() {
             const isAndroid = /Android/i.test(navigator.userAgent);
             const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const isChrome = /Chrome/i.test(navigator.userAgent);
+            const isSafari = /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
             
-            let message = '📱 Per installare MoneyFlow:\n\n';
+            let instructions = '';
             
-            if (isAndroid) {
-                message += '🤖 Android:\n';
-                message += '1. Apri con Chrome\n';
-                message += '2. Menu (⋮) → "Installa app"\n';
-                message += '3. O "Aggiungi alla schermata Home"';
+            if (isAndroid && isChrome) {
+                instructions = `
+🤖 ANDROID + CHROME:
+
+✅ METODO 1 - Installazione App:
+1. Tocca i 3 PUNTINI (⋮) in alto a destra
+2. Cerca "Installa app" o "Aggiungi a schermata Home"  
+3. Tocca "Installa" → L'app apparirà nella home!
+
+✅ METODO 2 - Se non vedi "Installa app":
+1. Tocca i 3 PUNTINI (⋮)
+2. "Aggiungi a schermata Home"
+3. Dai un nome → "Aggiungi"
+
+🔄 Se non funziona:
+- Ricarica la pagina (F5)
+- Aspetta 5 secondi
+- Riprova i passaggi sopra
+                `;
+            } else if (isAndroid) {
+                instructions = `
+🤖 ANDROID (Altri Browser):
+
+⚠️ Per la migliore esperienza, usa CHROME:
+1. Apri Chrome
+2. Vai a questo file HTML
+3. Segui le istruzioni per Chrome
+
+📱 Con browser attuale:
+1. Menu → "Aggiungi a schermata Home"
+2. O crea un segnalibro
+3. Mettilo nella schermata principale
+                `;
+            } else if (isIOS && isSafari) {
+                instructions = `
+🍎 iPhone/iPad + SAFARI:
+
+✅ INSTALLAZIONE:
+1. Tocca il pulsante CONDIVIDI (□↗) in basso
+2. Scorri le opzioni fino a "Aggiungi a Home"
+3. Tocca "Aggiungi a Home"
+4. Personalizza il nome se vuoi
+5. Tocca "Aggiungi" in alto a destra
+
+✨ L'app apparirà nella tua home screen!
+
+🔍 Non vedi "Aggiungi a Home"?
+- Scorri le opzioni verso il basso
+- Dovrebbe essere insieme agli altri pulsanti
+                `;
             } else if (isIOS) {
-                message += '🍎 iPhone/iPad:\n';
-                message += '1. Apri con Safari\n';
-                message += '2. Tocca "Condividi" (□↗)\n';
-                message += '3. "Aggiungi a Home"';
+                instructions = `
+🍎 iPhone/iPad (Browser non Safari):
+
+⚠️ Per installare come app, usa SAFARI:
+1. Apri Safari
+2. Vai a questo file HTML  
+3. Usa il pulsante Condividi → "Aggiungi a Home"
+
+📱 Con browser attuale:
+- Crea un segnalibro
+- Aggiungilo alla schermata Home manualmente
+                `;
             } else {
-                message += '💻 Desktop:\n';
-                message += '1. Salva il file HTML\n';
-                message += '2. Aprilo nel browser\n';
-                message += '3. Crea bookmark per accesso rapido';
+                instructions = `
+💻 DESKTOP/COMPUTER:
+
+✅ CHROME/EDGE:
+1. Guarda la barra degli indirizzi
+2. Cerca l'icona "Installa" ⊕
+3. Cliccaci sopra → "Installa"
+
+✅ ALTERNATIVA:
+1. Menu (⋮) → "Installa MoneyFlow"
+2. O "Aggiungi al desktop"
+
+📁 METODO UNIVERSALE:
+1. Salva il file HTML sul desktop
+2. Crea un collegamento
+3. Personalizza l'icona se vuoi
+                `;
             }
             
-            alert(message);
+            // Mostra le istruzioni in un alert più leggibile
+            showInstructionModal(instructions);
+        }
+        
+        function showInstructionModal(instructions) {
+            // Crea un modal personalizzato per le istruzioni
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.8);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            `;
+            
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                padding: 30px;
+                border-radius: 20px;
+                max-width: 500px;
+                max-height: 80vh;
+                overflow-y: auto;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                position: relative;
+            `;
+            
+            content.innerHTML = `
+                <button onclick="this.closest('div').remove()" style="
+                    position: absolute;
+                    top: 15px;
+                    right: 15px;
+                    background: rgba(255,255,255,0.2);
+                    color: white;
+                    border: none;
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    font-size: 16px;
+                ">×</button>
+                <h3 style="margin-bottom: 20px; text-align: center;">
+                    📱 Come Installare MoneyFlow
+                </h3>
+                <pre style="
+                    white-space: pre-wrap;
+                    font-family: 'Poppins', sans-serif;
+                    line-height: 1.5;
+                    font-size: 14px;
+                ">${instructions}</pre>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button onclick="this.closest('div').remove()" style="
+                        background: rgba(255,255,255,0.2);
+                        color: white;
+                        border: 2px solid white;
+                        padding: 12px 24px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">Ho Capito</button>
+                </div>
+            `;
+            
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+            
+            // Chiudi cliccando fuori
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
         }
         
         function dismissInstall() {
