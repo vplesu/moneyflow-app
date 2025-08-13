@@ -30,45 +30,7 @@
             overflow-x: hidden;
         }
         
-        /* Install Banner Migliorato */
-        .install-banner {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px;
-            text-align: center;
-            z-index: 1001;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            animation: slideDown 0.5s ease-out;
-        }
-        
-        .install-banner button {
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            color: white;
-            border: 2px solid rgba(255,255,255,0.3);
-            padding: 12px 24px;
-            border-radius: 25px;
-            margin: 5px 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-        
-        .install-banner button:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-        }
-        
-        .install-banner .primary-btn {
-            background: linear-gradient(135deg, #38a169, #68d391);
-            border: 2px solid #38a169;
-        }
+        /* Install Banner RIMOSSO - Non più necessario */
         
         /* Date Alerts - Più piccole e meno invadenti */
         .date-alerts {
@@ -174,7 +136,7 @@
             background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
             position: sticky;
@@ -183,34 +145,22 @@
             animation: slideInUp 0.8s ease-out;
         }
         
-        .header h1 {
-            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
         .month-selector {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
-            margin-top: 10px;
+            gap: 15px;
         }
         
         .month-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 12px 16px;
-            border-radius: 50px;
+            padding: 8px 12px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 18px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            font-size: 14px;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -233,15 +183,15 @@
         
         .month-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
         }
         
         .current-month {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 600;
             color: white;
             text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            min-width: 200px;
+            min-width: 150px;
         }
         
         /* Riepilogo compatto in alto */
@@ -594,12 +544,10 @@
             background: rgba(0,0,0,0.6);
             backdrop-filter: blur(10px);
             z-index: 1000;
-            align-items: flex-start;
+            align-items: center;
             justify-content: center;
             animation: fadeIn 0.3s ease-out;
             padding: 20px;
-            overflow-y: auto;
-            padding-top: 5vh;
         }
         
         .modal-content {
@@ -614,7 +562,9 @@
             animation: slideInUp 0.5s ease-out;
             position: relative;
             overflow: hidden;
-            max-height: 90vh;
+            max-height: 85vh;
+            overflow-y: auto;
+            margin: auto;
         }
         
         .modal-content::before {
@@ -757,14 +707,13 @@
         
         .sections-container {
             display: flex;
-            flex-direction: column;
-            gap: 25px;
+            flex-direction: row;
+            gap: 20px;
         }
         
-        @media (min-width: 768px) {
-            .sections-container {
-                flex-direction: row;
-            }
+        .sections-container .section {
+            flex: 1;
+            min-width: 0; /* Permette al flex di ridursi oltre la larghezza del contenuto */
         }
         
         .summary::before {
@@ -827,20 +776,21 @@
             }
             
             .header {
-                padding: 15px;
-            }
-            
-            .header h1 {
-                font-size: 24px;
+                padding: 12px;
             }
             
             .month-selector {
-                gap: 15px;
+                gap: 12px;
+            }
+            
+            .month-btn {
+                padding: 6px 10px;
+                font-size: 12px;
             }
             
             .current-month {
-                font-size: 18px;
-                min-width: 150px;
+                font-size: 14px;
+                min-width: 120px;
             }
             
             .add-btn {
@@ -857,11 +807,6 @@
                 bottom: 90px;
                 right: 20px;
                 font-size: 18px;
-            }
-            
-            .install-banner {
-                padding: 12px;
-                font-size: 14px;
             }
             
             .install-banner button {
@@ -920,30 +865,12 @@
     </style>
 </head>
 <body>
-    <!-- Banner di installazione migliorato -->
-    <div class="install-banner" id="install-banner">
-        <div>
-            <i class="fas fa-download"></i> 
-            <strong>Installa MoneyFlow</strong> come app!
-        </div>
-        <div style="margin-top: 10px;">
-            <button class="primary-btn" onclick="installApp()">
-                <i class="fas fa-mobile-alt"></i> Installa Ora
-            </button>
-            <button onclick="showInstructions()">
-                <i class="fas fa-question-circle"></i> Come Fare
-            </button>
-            <button onclick="dismissInstall()">
-                <i class="fas fa-times"></i> Chiudi
-            </button>
-        </div>
-    </div>
+    <!-- Banner di installazione RIMOSSO -->
     
     <!-- Alerts per scadenze -->
     <div class="date-alerts" id="date-alerts"></div>
 
     <div class="header">
-        <h1><i class="fas fa-coins"></i> MoneyFlow</h1>
         <div class="month-selector">
             <button class="month-btn" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
             <span class="current-month" id="current-month"></span>
@@ -1087,14 +1014,18 @@
             "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"
         ];
         
-        // PWA Install Logic Migliorato
+        // PWA Install Logic - DISABILITATO
+        /*
         window.addEventListener('beforeinstallprompt', (e) => {
             console.log('💾 PWA Install prompt disponibile');
             e.preventDefault();
             deferredPrompt = e;
-            showInstallBanner();
+            // showInstallBanner(); // DISABILITATO
         });
+        */
         
+        // Funzioni di installazione - DISABILITATE
+        /*
         function showInstallBanner() {
             const banner = document.getElementById('install-banner');
             banner.style.display = 'block';
@@ -1107,21 +1038,19 @@
         }
         
         function installApp() {
-            // Prova prima l'installazione PWA automatica
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((result) => {
                     if (result.outcome === 'accepted') {
                         console.log('✅ PWA installata con successo!');
                         showAlert('🎉 App installata con successo!', 'info');
-                        dismissInstall();
                     } else {
                         showDetailedInstructions();
                     }
                     deferredPrompt = null;
                 });
+                dismissInstall();
             } else {
-                // Se PWA non disponibile, mostra istruzioni dettagliate
                 showDetailedInstructions();
             }
         }
@@ -1305,6 +1234,7 @@
         function dismissInstall() {
             document.getElementById('install-banner').style.display = 'none';
         }
+        */
         
         // Sistema di Alert per scadenze migliorato
         function showAlert(message, type = 'info', persistent = false, alertId = null) {
@@ -1634,18 +1564,30 @@
             document.getElementById('item-name').value = '';
             document.getElementById('item-amount').value = '';
             document.getElementById('item-date').value = '';
-            document.getElementById('item-name').focus();
             editingIndex = -1;
             editingType = '';
             
-            // Previeni il scroll del body
-            document.body.style.overflow = 'hidden';
+            // Previeni il scroll e mantieni la posizione
+            const scrollY = window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.width = '100%';
+            
+            // Focus dopo un breve delay per evitare problemi di rendering
+            setTimeout(() => {
+                document.getElementById('item-name').focus();
+            }, 100);
         }
         
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
-            // Ripristina il scroll del body
-            document.body.style.overflow = 'auto';
+            
+            // Ripristina il scroll alla posizione precedente
+            const scrollY = document.body.style.top;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            window.scrollTo(0, parseInt(scrollY || '0') * -1);
         }
         
         // Funzioni di modifica
@@ -1678,12 +1620,19 @@
             document.getElementById('item-amount').value = item.amount;
             document.getElementById('item-date').value = item.date || '';
             document.getElementById('item-type').value = type;
-            document.getElementById('item-name').focus();
             editingIndex = index;
             editingType = type;
             
-            // Previeni il scroll del body
-            document.body.style.overflow = 'hidden';
+            // Previeni il scroll e mantieni la posizione
+            const scrollY = window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.width = '100%';
+            
+            // Focus dopo un breve delay
+            setTimeout(() => {
+                document.getElementById('item-name').focus();
+            }, 100);
         }
         
         function saveItem() {
@@ -1949,18 +1898,46 @@
         
         // Inizializzazione
         document.addEventListener('DOMContentLoaded', function() {
+            // Carica i dati prima di tutto
             loadFromStorage();
             updateDisplay();
             
-            // Mostra banner di installazione dopo 2 secondi
+            // Banner installazione DISABILITATO
+            /*
             setTimeout(() => {
                 if (!window.matchMedia('(display-mode: standalone)').matches) {
                     showInstallBanner();
                 }
             }, 2000);
+            */
             
             // Controlla scadenze ogni 30 minuti
             setInterval(checkUpcomingDues, 30 * 60 * 1000);
+            
+            // Doppio tap sulla data corrente per mostrare backup (non più su MoneyFlow che non c'è)
+            let tapCount = 0;
+            document.getElementById('current-month').addEventListener('click', function() {
+                tapCount++;
+                setTimeout(() => { tapCount = 0; }, 500);
+                if (tapCount === 2) {
+                    const backupBtn = document.getElementById('backup-btn');
+                    if (backupBtn.style.display === 'none') {
+                        backupBtn.style.display = 'block';
+                        showAlert('🔧 Modalità sviluppatore attivata!', 'info');
+                    }
+                }
+            });
+            
+            // Salvataggio automatico ogni volta che si chiude/minimizza l'app
+            window.addEventListener('beforeunload', saveToStorage);
+            window.addEventListener('pagehide', saveToStorage);
+            
+            // Per mobile - salva quando l'app va in background
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'hidden') {
+                    saveToStorage();
+                }
+            });
         });
         
         // Gestione modal
@@ -1976,12 +1953,14 @@
             }
         });
         
-        // PWA detection
+        // PWA detection - DISABILITATO
+        /*
         window.addEventListener('appinstalled', (evt) => {
             console.log('🎉 PWA installata con successo!');
             dismissInstall();
             showAlert('🎉 MoneyFlow installata come app!', 'info');
         });
+        */
         
         // Service Worker
         if ('serviceWorker' in navigator) {
