@@ -707,13 +707,13 @@
         
         .sections-container {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             gap: 20px;
         }
         
         .sections-container .section {
-            flex: 1;
-            min-width: 0; /* Permette al flex di ridursi oltre la larghezza del contenuto */
+            flex: none;
+            width: 100%;
         }
         
         .summary::before {
