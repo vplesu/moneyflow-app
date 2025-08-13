@@ -70,27 +70,30 @@
             border: 2px solid #38a169;
         }
         
-        /* Date Alerts */
+        /* Date Alerts - Più piccole e meno invadenti */
         .date-alerts {
             position: fixed;
             top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 20px;
             z-index: 999;
-            max-width: 90%;
-            width: 400px;
+            max-width: 300px;
+            width: 90%;
+            max-height: 200px;
+            overflow-y: auto;
         }
         
         .alert {
             background: linear-gradient(135deg, #e53e3e, #ff6b6b);
             color: white;
-            padding: 15px 20px;
-            border-radius: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4);
-            animation: slideInDown 0.5s ease-out;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+            animation: slideInRight 0.4s ease-out;
             position: relative;
             overflow: hidden;
+            font-size: 12px;
+            line-height: 1.3;
         }
         
         .alert.warning {
@@ -103,28 +106,29 @@
         
         .alert .close-alert {
             position: absolute;
-            top: 10px;
-            right: 15px;
+            top: 5px;
+            right: 8px;
             background: none;
             border: none;
             color: white;
-            font-size: 18px;
+            font-size: 14px;
             cursor: pointer;
             opacity: 0.8;
+            line-height: 1;
         }
         
         .alert .close-alert:hover {
             opacity: 1;
         }
         
-        @keyframes slideInDown {
+        @keyframes slideInRight {
             from {
                 opacity: 0;
-                transform: translateY(-30px);
+                transform: translateX(100%);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateX(0);
             }
         }
         
@@ -793,7 +797,22 @@
             
             .date-alerts {
                 top: 70px;
-                width: 95%;
+                right: 10px;
+                max-width: 250px;
+                max-height: 150px;
+            }
+            
+            .alert {
+                padding: 8px 12px;
+                font-size: 11px;
+                border-radius: 8px;
+                margin-bottom: 6px;
+            }
+            
+            .alert .close-alert {
+                top: 3px;
+                right: 6px;
+                font-size: 12px;
             }
         }
     </style>
@@ -941,6 +960,7 @@
         let editingIndex = -1;
         let deferredPrompt;
         let editingType = '';
+        let dismissedAlerts = new Set(); // Per tracciare gli alert chiusi
         
         // Dati iniziali con date
         let data = {
@@ -1186,25 +1206,41 @@
             document.getElementById('install-banner').style.display = 'none';
         }
         
-        // Sistema di Alert per scadenze
-        function showAlert(message, type = 'info', persistent = false) {
+        // Sistema di Alert per scadenze migliorato
+        function showAlert(message, type = 'info', persistent = false, alertId = null) {
+            // Se l'alert è già stato chiuso, non mostrarlo
+            if (alertId && dismissedAlerts.has(alertId)) {
+                return;
+            }
+            
             const alertsContainer = document.getElementById('date-alerts');
             const alert = document.createElement('div');
             alert.className = `alert ${type}`;
             alert.innerHTML = `
-                <div>${message}</div>
-                <button class="close-alert" onclick="this.parentElement.remove()">×</button>
+                <div style="margin-right: 20px;">${message}</div>
+                <button class="close-alert" onclick="dismissAlert(this, '${alertId || ''}')" title="Chiudi notifica">×</button>
             `;
             
             alertsContainer.appendChild(alert);
             
+            // Auto-remove per alert non persistenti
             if (!persistent) {
                 setTimeout(() => {
                     if (alert.parentElement) {
                         alert.remove();
                     }
-                }, 5000);
+                }, 4000);
             }
+        }
+        
+        function dismissAlert(buttonElement, alertId) {
+            // Aggiungi alla lista degli alert chiusi se ha un ID
+            if (alertId) {
+                dismissedAlerts.add(alertId);
+            }
+            
+            // Rimuovi l'alert
+            buttonElement.parentElement.remove();
         }
         
         function checkUpcomingDues() {
@@ -1212,48 +1248,56 @@
             const alerts = [];
             
             // Controlla spese fisse
-            data.fixedExpenses.forEach(item => {
+            data.fixedExpenses.forEach((item, index) => {
                 if (item.date) {
                     const dueDate = new Date(item.date);
                     const daysDiff = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+                    const alertId = `fixed-expense-${index}-${item.date}`;
                     
                     if (daysDiff <= 0 && daysDiff >= -1) {
                         alerts.push({
                             message: `⚠️ SCADUTA: ${item.name} (€${item.amount})`,
-                            type: 'urgent'
+                            type: 'urgent',
+                            alertId: alertId,
+                            persistent: true
                         });
                     } else if (daysDiff <= 3 && daysDiff > 0) {
                         alerts.push({
                             message: `🚨 ${item.name} scade tra ${daysDiff} giorni (€${item.amount})`,
-                            type: 'urgent'
+                            type: 'urgent',
+                            alertId: alertId,
+                            persistent: true
                         });
                     } else if (daysDiff <= 7 && daysDiff > 3) {
                         alerts.push({
                             message: `⚡ ${item.name} scade tra ${daysDiff} giorni (€${item.amount})`,
-                            type: 'warning'
+                            type: 'warning',
+                            alertId: alertId
                         });
                     }
                 }
             });
             
             // Controlla entrate fisse
-            data.fixedIncome.forEach(item => {
+            data.fixedIncome.forEach((item, index) => {
                 if (item.date) {
                     const dueDate = new Date(item.date);
                     const daysDiff = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+                    const alertId = `fixed-income-${index}-${item.date}`;
                     
                     if (daysDiff <= 2 && daysDiff >= 0) {
                         alerts.push({
                             message: `💰 ${item.name} in arrivo tra ${daysDiff} giorni (€${item.amount})`,
-                            type: 'info'
+                            type: 'info',
+                            alertId: alertId
                         });
                     }
                 }
             });
             
-            // Mostra alerts
+            // Mostra solo gli alert non ancora chiusi
             alerts.forEach(alert => {
-                showAlert(alert.message, alert.type, alert.type === 'urgent');
+                showAlert(alert.message, alert.type, alert.persistent || false, alert.alertId);
             });
         }
         
@@ -1321,7 +1365,12 @@
             renderVariableExpenses();
             renderVariableIncome();
             updateTotals();
-            checkUpcomingDues();
+            
+            // Mostra gli alert solo se non ci sono alert attivi
+            const alertsContainer = document.getElementById('date-alerts');
+            if (alertsContainer.children.length === 0) {
+                checkUpcomingDues();
+            }
         }
         
         function renderFixedExpenses() {
