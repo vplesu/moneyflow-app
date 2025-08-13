@@ -493,6 +493,35 @@
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
         }
         
+        .copy-fixed-btn {
+            position: fixed;
+            bottom: 120px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+            z-index: 100;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .copy-fixed-btn:hover {
+            transform: scale(1.1) rotate(-10deg);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
+        }
+        
+        .copy-fixed-btn:active {
+            transform: scale(0.95);
+        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -743,6 +772,14 @@
                 font-size: 24px;
             }
             
+            .copy-fixed-btn {
+                width: 50px;
+                height: 50px;
+                bottom: 90px;
+                right: 20px;
+                font-size: 18px;
+            }
+            
             .install-banner {
                 padding: 12px;
                 font-size: 14px;
@@ -855,6 +892,11 @@
     </div>
     
     <button class="add-btn" onclick="openModal()"><i class="fas fa-plus"></i></button>
+    
+    <!-- Pulsante per copiare spese fisse -->
+    <button class="copy-fixed-btn" onclick="copyFixedExpenses()" title="Copia spese fisse nel mese corrente">
+        <i class="fas fa-copy"></i>
+    </button>
     
     <!-- Modal per aggiungere/modificare elementi -->
     <div class="modal" id="modal">
@@ -1509,6 +1551,56 @@
                 saveToStorage();
                 updateDisplay();
                 showAlert('🗑️ Entrata eliminata', 'info');
+            }
+        }
+        
+        // Funzione per copiare tutte le spese fisse nelle spese variabili del mese corrente
+        function copyFixedExpenses() {
+            const key = getCurrentMonthKey();
+            initMonthlyData();
+            
+            // Controlla se ci sono già spese variabili questo mese
+            const existingExpenses = data.monthlyData[key].variableExpenses.length;
+            
+            let confirmMessage = `🔄 Copiare tutte le spese fisse (${data.fixedExpenses.length}) nelle spese variabili di ${monthNames[currentMonth]} ${currentYear}?`;
+            
+            if (existingExpenses > 0) {
+                confirmMessage += `\n\n⚠️ Ci sono già ${existingExpenses} spese variabili questo mese. Continuare?`;
+            }
+            
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+            
+            // Copia tutte le spese fisse
+            let copiedCount = 0;
+            
+            data.fixedExpenses.forEach(expense => {
+                // Crea una copia della spesa fissa
+                const copiedExpense = {
+                    name: expense.name,
+                    amount: expense.amount,
+                    date: expense.date
+                };
+                
+                // Evita duplicati controllando se esiste già una spesa con lo stesso nome
+                const existingExpense = data.monthlyData[key].variableExpenses.find(
+                    item => item.name.toLowerCase() === expense.name.toLowerCase()
+                );
+                
+                if (!existingExpense) {
+                    data.monthlyData[key].variableExpenses.push(copiedExpense);
+                    copiedCount++;
+                }
+            });
+            
+            saveToStorage();
+            updateDisplay();
+            
+            if (copiedCount > 0) {
+                showAlert(`✅ ${copiedCount} spese copiate con successo in ${monthNames[currentMonth]}!`, 'info');
+            } else {
+                showAlert(`ℹ️ Nessuna spesa copiata - potrebbero già esistere spese con gli stessi nomi.`, 'warning');
             }
         }
         
