@@ -342,11 +342,11 @@
         .item {
             display: flex;
             flex-direction: column;
-            padding: 15px 20px;
-            margin: 10px 0;
+            padding: 12px 15px;
+            margin: 8px 0;
             background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
             backdrop-filter: blur(10px);
-            border-radius: 15px;
+            border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.2);
             transition: all 0.3s ease;
             position: relative;
@@ -1396,11 +1396,8 @@
             renderVariableIncome();
             updateTotals();
             
-            // Mostra gli alert solo se non ci sono alert attivi
-            const alertsContainer = document.getElementById('date-alerts');
-            if (alertsContainer.children.length === 0) {
-                checkUpcomingDues();
-            }
+            // Controlla sempre le scadenze ad ogni aggiornamento
+            checkUpcomingDues();
         }
         
         function renderFixedExpenses() {
